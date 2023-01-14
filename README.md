@@ -1,2 +1,3 @@
-# transdirect-api
-RESTful wrapper for Transdirect shipping public API. Written in Rust. Should probably be called something like transdirect
+# Transdirect API Wrapper (in Rust)
+
+RESTful wrapper for Transdirect shipping public API. Written in Rust. Felt like this would be easy.
