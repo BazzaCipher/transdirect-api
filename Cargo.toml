@@ -1,7 +1,10 @@
 [package]
 name = "transdirect-api"
-version = "0.1.1-a"
+version = "0.1.1-b"
 edition = "2021"
+
+[lib]
+name = "transdirect"
 
 [dependencies]
 restson = "^1.3"
