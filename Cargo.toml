@@ -4,7 +4,7 @@ version = "0.1.2"
 description = "Rest wrapper for Transdirect written in Rust. Currently only synchronous"
 repository = "https://github.com/BazzaCipher/transdirect/"
 edition = "2021"
-licence = "MIT"
+license = "MIT"
 
 [lib]
 name = "transdirect"
