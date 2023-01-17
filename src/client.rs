@@ -1,6 +1,6 @@
 use num_traits::{Float,Unsigned};
 use serde::de::DeserializeOwned;
-use serde::{Serialize,Deserialize};
+use serde::Serialize;
 use restson::{RestClient, blocking::RestClient as BRestClient};
 
 use crate::Error;
