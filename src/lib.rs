@@ -3,6 +3,7 @@ pub mod account;
 pub mod booking;
 pub mod order;
 pub mod error;
+pub mod client;
 
 pub type Error = error::Error;
 

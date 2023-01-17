@@ -51,9 +51,9 @@ impl FromStr for BookingStatus {
 /// 
 /// 
 #[derive(Debug, Serialize, Default)]
-pub struct BookingRequest<'a, T>
-where T: Unsigned {
-    pub declared_value: f64,
+pub struct BookingRequest<'a, T, U>
+where T: Unsigned, U: Float {
+    pub declared_value: U,
     pub referrer: String,
     pub requesting_site: String,
     pub tailgate_pickup: bool,
@@ -63,8 +63,8 @@ where T: Unsigned {
     pub receiver: Option<&'a Account>,
 }
 
-impl<'a, T> BookingRequest<'a, T>
-where T: Unsigned + Default {
+impl<'a, T, U> BookingRequest<'a, T, U>
+where T: Unsigned + Default, U: Float + Default {
     /// Creates an empty `BookingRequest`
     /// 
     /// Each element will be either empty, 0, or false.
@@ -88,8 +88,8 @@ where T: Unsigned + Default {
     }
 }
 
-impl<T> RestPath<()> for BookingRequest<'_, T>
-where T: Unsigned {
+impl<T, U> RestPath<()> for BookingRequest<'_, T, U>
+where T: Unsigned, U: Float {
     fn get_path(_: ()) -> Result<String, RestsonError> { Ok("bookings/v4".to_string()) }
 }
 

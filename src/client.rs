@@ -1,4 +1,11 @@
-use restson::RestClient;
+use num_traits::{Float,Unsigned};
+use serde::de::DeserializeOwned;
+use serde::{Serialize,Deserialize};
+use restson::{RestClient, blocking::RestClient as BRestClient};
+
+use crate::Error;
+use crate::account::{Account,AuthenticateWith,Member};
+use crate::booking::{BookingRequest,BookingResponse};
 
 static API_ENDPOINT: &str = "https://www.transdirect.com.au/api/";
 
@@ -7,7 +14,7 @@ static API_ENDPOINT: &str = "https://www.transdirect.com.au/api/";
 /// 
 pub struct Client<'a> {
     authenticated: bool,
-    restclient: RestClient,
+    restclient: BRestClient,
     sender: Option<&'a Account>,
     receiver: Option<&'a Account>,
 }
@@ -19,7 +26,7 @@ impl<'a> Client<'a> {
             restclient: RestClient::new_blocking(API_ENDPOINT)
                 .expect("Should be a valid URL or connected to the internet"),
             sender: None,
-            receiver: None,
+            receiver: None
         }
     }
     
@@ -45,11 +52,11 @@ impl<'a> Client<'a> {
         }
     }
     
-    pub fn quotes<T, U>(&self, request: &BookingRequest<T, U>) -> Result<Booking, Error>
-    where T: Float + serde::Serialize, U: Unsigned + serde::Serialize {
+    pub fn quotes<'b, T, U>(&self, request: &'b BookingRequest<T, U>) -> Result<BookingResponse<T, U>, Error>
+    where T: Unsigned + Serialize + DeserializeOwned, U: Float + DeserializeOwned + Serialize {
         let response  = self
             .restclient
-            .post_capture::<_, _, BookingResponse<f64, u32>>((), request)
+            .post_capture::<_, _, BookingResponse<T, U>>((), request)
             .map_err(|e| Error::HTTPError(e.to_string()))?
             .into_inner();
         

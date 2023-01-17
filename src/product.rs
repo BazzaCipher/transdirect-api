@@ -3,7 +3,7 @@
 /// 
 use std::default::Default;
 use std::collections::HashMap;
-use num_traits::{Float,Unsigned};
+use num_traits::{Float,Unsigned, One};
 use serde_derive::{Serialize,Deserialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
@@ -45,7 +45,24 @@ where T: Unsigned + Default {
     //     self.dimensions.is_valid()
     // }
     
-    pub fn from_dimensions() {}
+    pub fn from_dimensions_quantity(dimensions: Dimensions<T>, quantity: T) -> Self {
+        Product {
+            dimensions,
+            quantity,
+            ..Product::default()
+        }
+    }
+}
+
+impl<T> Product<T>
+where T: Unsigned + Default + One {
+    pub fn from_dimensions(dimensions: Dimensions<T>) -> Self {
+        Product {
+            dimensions,
+            quantity: <T as One>::one(),
+            ..Product::default()
+        }
+    }
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
@@ -54,6 +71,21 @@ pub struct Dimensions<T> where T: Unsigned {
     pub width: T,
     pub height: T,
 }
+
+impl<T> Dimensions<T> where T: Unsigned + Default {
+    pub fn new() -> Self {
+        Default::default()
+    }
+    
+    pub fn from_lwh(length: T, width: T, height: T) -> Self {
+        Dimensions {
+            length,
+            width,
+            height,
+        }
+    }
+}
+
 /// A service provided by one of the companies listed by Transdirect.
 /// It is put in the products file because it is a product provided by
 /// external companies.
