@@ -58,7 +58,7 @@ where T: Unsigned, U: Float {
     pub requesting_site: String,
     pub tailgate_pickup: bool,
     pub tailgate_delivery: bool,
-    pub items: Vec<Product<T>>,
+    pub items: Vec<Product<T>>, // Products may be in a higher scope
     pub sender: Option<&'a Account>,
     pub receiver: Option<&'a Account>,
 }
@@ -76,12 +76,16 @@ where T: Unsigned + Default, U: Float + Default {
     /// ```
     /// use transdirect::{BookingRequest, Product};
     ///
+    /// # let person = Account::default();
+    /// 
     /// let products = vec![Product::new()];
-    /// let breq = BookingRequest::new()
-    ///     .declared_value(55.0)
-    ///     .items(&products);
-    ///  // .sender(Account { ... })
-    ///  // .receiver(Account { ... });
+    /// let breq = BookingRequest {
+    ///     declared_value: 55.0,
+    ///     items: &products[..],
+    ///     sender: Some(person),
+    ///     receiver: Some(person),
+    ///     ..BookingRequest::default()
+    /// }
     /// ```
     pub fn new() -> Self {
         Default::default()
