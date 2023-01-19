@@ -29,15 +29,15 @@ impl RestPath<()> for Member {
 /// A user account (sender or receiver)
 /// 
 /// 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Account {
-    address: String,
-    email: String,
-    name: String,
-    postcode: u8,
-    state: String,
-    suburb: String,
-    kind: String, // "type" is a keyword
-    country: String, // two-letter ISO country code
-    company_name: String,
+    pub address: String,
+    pub email: String,
+    pub name: String,
+    pub postcode: u16,
+    pub state: String,
+    pub suburb: String,
+    pub kind: String, // "type" is a keyword
+    pub country: String, // two-letter ISO country code
+    pub company_name: String,
 }

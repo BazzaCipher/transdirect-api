@@ -76,16 +76,17 @@ where T: Unsigned + Default, U: Float + Default {
     /// ```
     /// use transdirect::{BookingRequest, Product};
     ///
+    /// # use transdirect::Account;
     /// # let person = Account::default();
     /// 
     /// let products = vec![Product::new()];
     /// let breq = BookingRequest {
     ///     declared_value: 55.0,
-    ///     items: &products[..],
-    ///     sender: Some(person),
-    ///     receiver: Some(person),
+    ///     items: products,
+    ///     sender: Some(&person),
+    ///     receiver: Some(&person),
     ///     ..BookingRequest::default()
-    /// }
+    /// };
     /// ```
     pub fn new() -> Self {
         Default::default()
@@ -104,13 +105,13 @@ where T: Unsigned, U: Float {
 pub struct BookingResponse<T, U> where T: Unsigned, U: Float {
     pub id: u32,
     pub status: BookingStatus,
-    #[serde(with = "time::serde::rfc3339")]
-    pub booked_at: time::OffsetDateTime,
+    // #[serde(with = "time::serde::rfc3339")]
+    pub booked_at: String, // time::OffsetDateTime,
     pub booked_by: String, // Expected to be "sender"
-    #[serde(with = "time::serde::rfc3339")]
-    pub created_at: time::OffsetDateTime,
-    #[serde(with = "time::serde::rfc3339")]
-    pub updated_at: time::OffsetDateTime,
+    // #[serde(with = "time::serde::rfc3339")]
+    pub created_at: String, // time::OffsetDateTime,
+    // #[serde(with = "time::serde::rfc3339")]
+    pub updated_at: String, // time::OffsetDateTime,
     pub declared_value: U,
     pub insured_value: U,
     pub description: Option<String>,

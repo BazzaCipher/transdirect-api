@@ -98,7 +98,55 @@ impl<'a> Client<'a> {
 
 #[cfg(test)]
 mod tests {
+    use crate::TransdirectClient as Client;
+    use crate::BookingRequest;
+    use crate::Product;
+    use crate::Account;
+
+    
+    fn src_dest() -> (Account, Account){
+        (Account { 
+            address: "130 Royal St".to_string(),
+            name: "John Smith".to_string(),
+            email: "jsmith@google.com".to_string(),
+            postcode: 6004,
+            state: "WA".to_string(),
+            suburb: "East Perth".to_string(),
+            kind: "business".to_string(),
+            country: "AU".to_string(),
+            company_name: "Royal Australian Mint".to_string()
+        },
+        Account {
+            address: "1 Pearl Bay Ave".to_string(),
+            name: "Jane Doe".to_string(),
+            email: "jdoe@google.com".to_string(),
+            postcode: 2088,
+            state: "NSW".to_string(),
+            suburb: "Mosman".to_string(),
+            kind: "residential".to_string(),
+            country: "AU".to_string(),
+            company_name: "Sydney Harbour Operations Ltd.".to_string()
+        }
+        )
+    }
+    
     #[test]
-    fn should_generate_valid_client() {
+    fn should_get_response() {
+        let c = Client::new();
+        let items = vec![Product::from_lwh_quantity(5, 5, 5, 7)];
+        let (sender, receiver) = src_dest();
+        let b = BookingRequest {
+            declared_value: 53.3,
+            items,
+            sender: Some(&sender),
+            receiver: Some(&receiver),
+            ..BookingRequest::default()
+        };
+
+        let m = c.quotes(&b);
+        match m {
+            Ok(m) => println!("{:?}", m),
+            Err(e) => println!("{:?}", e)
+        }
     }
 }

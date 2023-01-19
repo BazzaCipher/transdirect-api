@@ -52,6 +52,10 @@ where T: Unsigned + Default {
             ..Product::default()
         }
     }
+    
+    pub fn from_lwh_quantity(length: T, width: T, height: T, quantity: T) -> Self {
+        Self::from_dimensions_quantity(Dimensions { length, width, height }, quantity)
+    }
 }
 
 impl<T> Product<T>
@@ -62,6 +66,10 @@ where T: Unsigned + Default + One {
             quantity: <T as One>::one(),
             ..Product::default()
         }
+    }
+
+    pub fn from_lwh(length: T, width: T, height: T) -> Self {
+        Self::from_dimensions(Dimensions { length, width, height })
     }
 }
 
