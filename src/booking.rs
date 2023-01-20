@@ -3,6 +3,7 @@ use std::str::FromStr;
 use restson::{RestPath, Error as RestsonError};
 use num_traits::{Float,Unsigned};
 use serde_derive::{Serialize, Deserialize};
+use serde::ser;
 
 use crate::Error;
 use crate::product::{Product,Service};
@@ -52,19 +53,19 @@ impl FromStr for BookingStatus {
 /// 
 #[derive(Debug, Serialize, Default)]
 pub struct BookingRequest<'a, T, U>
-where T: Unsigned, U: Float {
+where T: Unsigned + ser::Serialize, U: Float + ser::Serialize {
     pub declared_value: U,
     pub referrer: String,
     pub requesting_site: String,
     pub tailgate_pickup: bool,
     pub tailgate_delivery: bool,
-    pub items: Vec<Product<T>>, // Products may be in a higher scope
+    pub items: Vec<Product<T, U>>, // Products may be in a higher scope
     pub sender: Option<&'a Account>,
     pub receiver: Option<&'a Account>,
 }
 
 impl<'a, T, U> BookingRequest<'a, T, U>
-where T: Unsigned + Default, U: Float + Default {
+where T: Unsigned + ser::Serialize + Default, U: Float + ser::Serialize + Default {
     /// Creates an empty `BookingRequest`
     /// 
     /// Each element will be either empty, 0, or false.
@@ -94,7 +95,7 @@ where T: Unsigned + Default, U: Float + Default {
 }
 
 impl<T, U> RestPath<()> for BookingRequest<'_, T, U>
-where T: Unsigned, U: Float {
+where T: Unsigned + ser::Serialize, U: Float + ser::Serialize {
     fn get_path(_: ()) -> Result<String, RestsonError> { Ok("bookings/v4".to_string()) }
 }
 
@@ -102,7 +103,8 @@ where T: Unsigned, U: Float {
 /// 
 ///
 #[derive(Debug, Deserialize)]
-pub struct BookingResponse<T, U> where T: Unsigned, U: Float {
+pub struct BookingResponse<T, U>
+where T: Unsigned + ser::Serialize, U: Float + ser::Serialize {
     pub id: u32,
     pub status: BookingStatus,
     // #[serde(with = "time::serde::rfc3339")]
@@ -115,7 +117,7 @@ pub struct BookingResponse<T, U> where T: Unsigned, U: Float {
     pub declared_value: U,
     pub insured_value: U,
     pub description: Option<String>,
-    pub items: Vec<Product<T>>,
+    pub items: Vec<Product<T, U>>,
     pub label: String,
     // notifications: 
     pub quotes: Vec<Service<U>>,

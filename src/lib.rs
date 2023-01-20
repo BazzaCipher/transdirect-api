@@ -23,6 +23,6 @@ pub type Error = error::Error;
 pub type OrderStatus = order::OrderStatus;
 // Missing Order
 
-pub type Dimensions = product::Dimensions<CommonUnsigned>;
-pub type Product = product::Product<CommonUnsigned>;
+pub type Dimensions = product::Dimensions<CommonFloat>;
+pub type Product = product::Product<CommonUnsigned, CommonFloat>;
 pub type Service = product::Service<CommonFloat>;

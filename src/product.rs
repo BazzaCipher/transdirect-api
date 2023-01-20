@@ -3,20 +3,22 @@
 /// 
 use std::default::Default;
 use std::collections::HashMap;
-use num_traits::{Float,Unsigned, One};
+use num_traits::{Float,Unsigned};
 use serde_derive::{Serialize,Deserialize};
+use serde::ser;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
-pub struct Product<T> where T: Unsigned {
+pub struct Product<T, U> where T: Unsigned, U: Float + ser::Serialize {
     pub quantity: T,
     pub weight: T, // Transdirect calculates weight in increments of 1kg
-    pub dimensions: Dimensions<T>,
+    #[serde(flatten)]
+    pub dimensions: Dimensions<U>,
     pub description: String,
-    id: Option<u32>,
+    pub id: Option<u32>, // Not necessary for Client to create
 }
 
-impl<R> Product<R>
-where R: Unsigned + Default {
+impl<T, U> Product<T, U>
+where T: Unsigned + ser::Serialize + Default, U: Float + ser::Serialize + Default {
     /// Creates a new empty Product instance
     /// 
     /// This is a convenience function to create a valid Product fast
@@ -38,49 +40,15 @@ where R: Unsigned + Default {
         Default::default()
     }
 }
-    
-impl<T> Product<T>
-where T: Unsigned + Default {
-    // pub fn is_valid(&self) -> bool {
-    //     self.dimensions.is_valid()
-    // }
-    
-    pub fn from_dimensions_quantity(dimensions: Dimensions<T>, quantity: T) -> Self {
-        Product {
-            dimensions,
-            quantity,
-            ..Product::default()
-        }
-    }
-    
-    pub fn from_lwh_quantity(length: T, width: T, height: T, quantity: T) -> Self {
-        Self::from_dimensions_quantity(Dimensions { length, width, height }, quantity)
-    }
-}
 
-impl<T> Product<T>
-where T: Unsigned + Default + One {
-    pub fn from_dimensions(dimensions: Dimensions<T>) -> Self {
-        Product {
-            dimensions,
-            quantity: <T as One>::one(),
-            ..Product::default()
-        }
-    }
-
-    pub fn from_lwh(length: T, width: T, height: T) -> Self {
-        Self::from_dimensions(Dimensions { length, width, height })
-    }
-}
-
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
-pub struct Dimensions<T> where T: Unsigned {
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Deserialize, Serialize, Default)]
+pub struct Dimensions<T> where T: Float {
     pub length: T,
     pub width: T,
     pub height: T,
 }
 
-impl<T> Dimensions<T> where T: Unsigned + Default {
+impl<T> Dimensions<T> where T: Float + Default {
     pub fn new() -> Self {
         Default::default()
     }
@@ -93,6 +61,17 @@ impl<T> Dimensions<T> where T: Unsigned + Default {
         }
     }
 }
+
+// impl<T> ser::Serialize for Dimensions<T> where T: Float + ser::Serialize {
+//     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+//     where S: ser::Serializer {
+//         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+//         for e in self {
+//             seq.serialize_element(e)?
+//         }
+//         seq.end()
+//     }
+// }
 
 /// A service provided by one of the companies listed by Transdirect.
 /// It is put in the products file because it is a product provided by

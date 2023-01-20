@@ -1,6 +1,6 @@
 [package]
 name = "transdirect-api"
-version = "0.1.2-b"
+version = "0.1.2-c"
 description = "Rest wrapper for Transdirect written in Rust. Currently only synchronous"
 repository = "https://github.com/BazzaCipher/transdirect/"
 edition = "2021"

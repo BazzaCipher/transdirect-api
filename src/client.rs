@@ -84,7 +84,7 @@ impl<'a> Client<'a> {
     }
     
     pub fn quotes<'b, T, U>(&self, request: &'b BookingRequest<T, U>) -> Result<BookingResponse<T, U>, Error>
-    where T: Unsigned + Serialize + DeserializeOwned, U: Float + DeserializeOwned + Serialize {
+    where T: Unsigned + DeserializeOwned + Serialize, U: Float + DeserializeOwned + Serialize {
         let response  = self
             .restclient
             .post_capture::<_, _, BookingResponse<T, U>>((), request)
@@ -98,11 +98,8 @@ impl<'a> Client<'a> {
 
 #[cfg(test)]
 mod tests {
+    use crate::*;
     use crate::TransdirectClient as Client;
-    use crate::BookingRequest;
-    use crate::Product;
-    use crate::Account;
-
     
     fn src_dest() -> (Account, Account){
         (Account { 
@@ -133,7 +130,7 @@ mod tests {
     #[test]
     fn should_get_response() {
         let c = Client::new();
-        let items = vec![Product::from_lwh_quantity(5, 5, 5, 7)];
+        let items = vec![Product { weight: 2, quantity: 1, dimensions: Dimensions { length: 5.0f64, width: 5.0f64, height: 5.0f64 }, ..Product::new() }];
         let (sender, receiver) = src_dest();
         let b = BookingRequest {
             declared_value: 53.3,

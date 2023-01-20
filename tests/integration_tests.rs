@@ -3,12 +3,12 @@ use transdirect::booking::*;
 
 #[test]
 fn should_accept_unsigned_dimensions() {
-    let _m = Dimensions::<u32> { width: 1, height: 1, length: 1 };
+    let _m = Dimensions { width: 1.0f64, height: 1.0, length: 1.0 };
 }
 
 #[test]
 fn should_create_booking() {
-    let m = Product::from_dimensions_quantity(Dimensions::from_lwh(15u32, 15, 15), 3);
+    let m = Product { dimensions: Dimensions { length: 15.0, height: 15.0, width: 15.0}, quantity: 1u32, weight: 3, ..Product::new() };
     let b = BookingRequest { declared_value: 53.3,
         items: vec![m],
         ..BookingRequest::new()
