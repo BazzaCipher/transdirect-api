@@ -35,8 +35,7 @@ static API_ENDPOINT: &str = if cfg!(test) {
 pub struct Client<'a> {
     authenticated: bool,
     restclient: BRestClient, // restson seems to have no advantages over reqwest
-    sender: Option<&'a Account>,
-    receiver: Option<&'a Account>,
+    pub sender: Option<&'a Account>, // Should eventually be default
 }
 
 impl<'a> Client<'a> {
@@ -45,8 +44,7 @@ impl<'a> Client<'a> {
             authenticated: false,
             restclient: RestClient::new_blocking(API_ENDPOINT)
                 .expect("Should be a valid URL or connected to the internet"),
-            sender: None,
-            receiver: None
+            sender: None
         }
     }
     

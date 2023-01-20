@@ -13,4 +13,6 @@ fn should_create_booking() {
         items: vec![m],
         ..BookingRequest::new()
     };
+    
+    assert!(b.items.len() == 1);
 }
