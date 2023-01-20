@@ -34,9 +34,10 @@ pub struct Account {
     pub address: String,
     pub email: String,
     pub name: String,
-    pub postcode: u16,
+    pub postcode: String,
     pub state: String,
     pub suburb: String,
+    #[serde(alias = "type")]
     pub kind: String, // "type" is a keyword
     pub country: String, // two-letter ISO country code
     pub company_name: String,

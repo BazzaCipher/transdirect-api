@@ -1,11 +1,10 @@
-use std::str::FromStr;
+use std::collections::HashMap;
 
 use restson::{RestPath, Error as RestsonError};
 use num_traits::{Float,Unsigned};
 use serde_derive::{Serialize, Deserialize};
-use serde::ser;
+use serde::{de, ser};
 
-use crate::Error;
 use crate::product::{Product,Service};
 use crate::account::Account;
 
@@ -13,7 +12,7 @@ use crate::account::Account;
 /// 
 /// As defined by the [specification](https://transdirectapiv4.docs.apiary.io/reference/bookings-/-simple-quotes/single-booking)
 #[non_exhaustive]
-#[derive(Debug, Eq, PartialEq, Deserialize, Serialize, Default)]
+#[derive(Debug, Eq, PartialEq, Default)]
 pub enum BookingStatus {
     #[default]
     New,
@@ -28,11 +27,12 @@ pub enum BookingStatus {
     BookedManually,
 }
 
-impl FromStr for BookingStatus {
-    type Err = Error;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
+impl<'de> de::Deserialize<'de> for BookingStatus {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where D: de::Deserializer<'de>
+    {
+        let variant = String::deserialize(deserializer)?;
+        match variant.as_str() {
             "new"             => Ok(Self::New),
             "pending_payment" => Ok(Self::PendingPayment),
             "paid"            => Ok(Self::Paid),
@@ -43,7 +43,7 @@ impl FromStr for BookingStatus {
             "pending_review"  => Ok(Self::PendingReview),
             "request_failed"  => Ok(Self::RequestFailed),
             "booked_manually" => Ok(Self::BookedManually),
-            _ => Err(Self::Err::UnknownStatus),
+            _   => Err(de::Error::custom("Unrecognised enum value"))
         }
     }
 }
@@ -120,11 +120,11 @@ where T: Unsigned + ser::Serialize, U: Float + ser::Serialize {
     pub items: Vec<Product<T, U>>,
     pub label: String,
     // notifications: 
-    pub quotes: Vec<Service<U>>,
+    pub quotes: HashMap<String, Service<U>>,
     pub sender: Account,
     pub receiver: Account,
     pub pickup_window: Vec<String>,
-    pub connote: String,
+    pub connote: Option<String>, // With the mock server, this is null => None
     pub charged_weight: T,
     pub scanned_weight: T,
     pub special_instructions: String,

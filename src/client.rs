@@ -106,7 +106,7 @@ mod tests {
             address: "130 Royal St".to_string(),
             name: "John Smith".to_string(),
             email: "jsmith@google.com".to_string(),
-            postcode: 6004,
+            postcode: "6008".to_string(),
             state: "WA".to_string(),
             suburb: "East Perth".to_string(),
             kind: "business".to_string(),
@@ -117,7 +117,7 @@ mod tests {
             address: "1 Pearl Bay Ave".to_string(),
             name: "Jane Doe".to_string(),
             email: "jdoe@google.com".to_string(),
-            postcode: 2088,
+            postcode: "2008".to_string(),
             state: "NSW".to_string(),
             suburb: "Mosman".to_string(),
             kind: "residential".to_string(),
@@ -130,7 +130,7 @@ mod tests {
     #[test]
     fn should_get_response() {
         let c = Client::new();
-        let items = vec![Product { weight: 2, quantity: 1, dimensions: Dimensions { length: 5.0f64, width: 5.0f64, height: 5.0f64 }, ..Product::new() }];
+        let items = vec![Product { weight: 2.0, quantity: 1, dimensions: Dimensions { length: 5.0f64, width: 5.0f64, height: 5.0f64 }, ..Product::new() }];
         let (sender, receiver) = src_dest();
         let b = BookingRequest {
             declared_value: 53.3,
@@ -141,9 +141,6 @@ mod tests {
         };
 
         let m = c.quotes(&b);
-        match m {
-            Ok(m) => println!("{:?}", m),
-            Err(e) => println!("{:?}", e)
-        }
+        assert!(m.is_ok());
     }
 }
