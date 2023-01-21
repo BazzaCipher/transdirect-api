@@ -92,6 +92,17 @@ impl<'a> Client<'a> {
         Ok(response)
     }
     
+    /// Gets a copy of a booking from its id; note that this is
+    /// different from its connote (consignment note or tracking number).
+    /// 
+    /// # Examples
+    /// 
+    /// ```
+    /// let c = Client::new():
+    /// ...
+    /// let oldbooking = c.booking::<u32, f64>(623630)?
+    /// // Do something interesting
+    /// oldbooking.update()
     pub fn booking<T, U>(&self, booking_id: u64) -> Result<BookingResponse<T, U>, Error>
     where T: Unsigned + DeserializeOwned, U: Float + DeserializeOwned {
         let response = self
