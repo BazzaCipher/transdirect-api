@@ -99,12 +99,20 @@ where T: Unsigned + ser::Serialize, U: Float + ser::Serialize {
     fn get_path(_: ()) -> Result<String, RestsonError> { Ok("bookings/v4".to_string()) }
 }
 
+// I don't know how to implement generically without running into collisions
+impl<T, U> RestPath<u64> for BookingResponse<T, U>
+where T: Unsigned, U: Float {
+    fn get_path(params: u64) -> Result<String, RestsonError> {
+        Ok(format!("bookings/v4/{params}"))
+    }
+}
+
 /// Represents a response due to a booking request from the server
 /// 
 ///
 #[derive(Debug, Deserialize)]
 pub struct BookingResponse<T, U>
-where T: Unsigned + ser::Serialize, U: Float + ser::Serialize {
+where T: Unsigned, U: Float {
     pub id: u32,
     pub status: BookingStatus,
     #[serde(with = "time::serde::iso8601")]
@@ -119,7 +127,7 @@ where T: Unsigned + ser::Serialize, U: Float + ser::Serialize {
     pub description: Option<String>,
     pub items: Vec<Product<T, U>>,
     pub label: String,
-    // notifications: 
+    pub notifications: HashMap<String, bool>,
     pub quotes: HashMap<String, Service<U>>,
     pub sender: Account,
     pub receiver: Account,

@@ -86,7 +86,18 @@ impl<'a> Client<'a> {
         let response  = self
             .restclient
             .post_capture::<_, _, BookingResponse<T, U>>((), request)
-            .map_err(|e| Error::HTTPError(e.to_string()))?
+            .map_err(|e| Error::HTTPError(e.to_string()))? // Eventually remove entirely
+            .into_inner();
+        
+        Ok(response)
+    }
+    
+    pub fn booking<T, U>(&self, booking_id: u64) -> Result<BookingResponse<T, U>, Error>
+    where T: Unsigned + DeserializeOwned, U: Float + DeserializeOwned {
+        let response = self
+            .restclient
+            .get::<u64, BookingResponse<T, U>>(booking_id)
+            .map_err(|e| Error::HTTPError(e.to_string()))? // Eventually remove entirely
             .into_inner();
         
         Ok(response)
@@ -145,5 +156,13 @@ mod tests {
             Err(e) => println!("{:?}", e),
         }
         // assert!(m.is_ok());
+    }
+    
+    #[test]
+    fn should_get_booking() {
+        let c = Client::new();
+        let booking = c.booking::<u32, f64>(623630);
+
+        assert!(booking.is_ok());
     }
 }

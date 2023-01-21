@@ -8,7 +8,7 @@ use serde_derive::{Serialize,Deserialize};
 use serde::ser;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
-pub struct Product<T, U> where T: Unsigned, U: Float + ser::Serialize {
+pub struct Product<T, U> where T: Unsigned, U: Float {
     pub quantity: T,
     pub weight: U, // Transdirect calculates weight in increments of 1kg
     #[serde(flatten)]
