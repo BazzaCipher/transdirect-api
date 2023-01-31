@@ -99,7 +99,7 @@ impl<'a> Client<'a> {
     /// 
     /// ```
     /// let c = Client::new():
-    /// ...
+    /// //...
     /// let oldbooking = c.booking::<u32, f64>(623630)?
     /// // Do something interesting
     /// oldbooking.update()
@@ -162,11 +162,7 @@ mod tests {
 
         let m = c.quotes(&b);
         
-        match m {
-            Ok(s) => println!("{:?}", s),
-            Err(e) => println!("{:?}", e),
-        }
-        // assert!(m.is_ok());
+        assert!(m.is_ok());
     }
     
     #[test]
