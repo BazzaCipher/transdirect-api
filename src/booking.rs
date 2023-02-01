@@ -100,9 +100,9 @@ where T: Unsigned + ser::Serialize, U: Float + ser::Serialize {
 }
 
 // I don't know how to implement generically without running into collisions
-impl<T, U> RestPath<u64> for BookingResponse<T, U>
+impl<T, U> RestPath<u32> for BookingResponse<T, U>
 where T: Unsigned, U: Float {
-    fn get_path(params: u64) -> Result<String, RestsonError> {
+    fn get_path(params: u32) -> Result<String, RestsonError> {
         Ok(format!("bookings/v4/{params}"))
     }
 }
@@ -131,7 +131,7 @@ where T: Unsigned, U: Float {
     pub quotes: HashMap<String, Service<U>>,
     pub sender: Account,
     pub receiver: Account,
-    pub pickup_window: Vec<String>,
+    pub pickup_window: Vec<String>, // Could be a time::OffsetDateTime
     pub connote: Option<String>, // With the mock server, this is null => None
     pub charged_weight: T,
     pub scanned_weight: T,

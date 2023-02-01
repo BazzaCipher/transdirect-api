@@ -83,13 +83,11 @@ impl<'a> Client<'a> {
     
     pub fn quotes<'b, T, U>(&self, request: &'b BookingRequest<T, U>) -> Result<BookingResponse<T, U>, Error>
     where T: Unsigned + DeserializeOwned + Serialize, U: Float + DeserializeOwned + Serialize {
-        let response  = self
+        self
             .restclient
             .post_capture::<_, _, BookingResponse<T, U>>((), request)
-            .map_err(|e| Error::HTTPError(e.to_string()))? // Eventually remove entirely
-            .into_inner();
-        
-        Ok(response)
+            .map(|s| s.into_inner())
+            .map_err(|e| Error::HTTPError(e.to_string())) // Eventually remove entirely
     }
     
     /// Gets a copy of a booking from its id; note that this is
@@ -97,21 +95,21 @@ impl<'a> Client<'a> {
     /// 
     /// # Examples
     /// 
-    /// ```
-    /// let c = Client::new():
+    /// ```no_run
+    /// use transdirect::BookingResponse;
+    /// use transdirect::TransdirectClient as Client;
+    /// let c = Client::new();
     /// //...
-    /// let oldbooking = c.booking::<u32, f64>(623630)?
+    /// let oldbooking: BookingResponse = c.booking(623630).expect("Valid booking");
     /// // Do something interesting
-    /// oldbooking.update()
-    pub fn booking<T, U>(&self, booking_id: u64) -> Result<BookingResponse<T, U>, Error>
+    /// # // oldbooking.update()
+    pub fn booking<T, U>(&self, booking_id: u32) -> Result<BookingResponse<T, U>, Error>
     where T: Unsigned + DeserializeOwned, U: Float + DeserializeOwned {
-        let response = self
+        self
             .restclient
-            .get::<u64, BookingResponse<T, U>>(booking_id)
-            .map_err(|e| Error::HTTPError(e.to_string()))? // Eventually remove entirely
-            .into_inner();
-        
-        Ok(response)
+            .get::<u32, BookingResponse<T, U>>(booking_id)
+            .map(|s| s.into_inner())
+            .map_err(|e| Error::HTTPError(e.to_string()))
     }
 }
 
