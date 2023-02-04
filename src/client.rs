@@ -1,6 +1,6 @@
 use num_traits::{Float,Unsigned};
 use serde::de::DeserializeOwned;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use restson::{RestClient, blocking::RestClient as BRestClient};
 
 use crate::Error;
@@ -107,9 +107,40 @@ impl<'a> Client<'a> {
     where T: Unsigned + DeserializeOwned, U: Float + DeserializeOwned {
         self
             .restclient
-            .get::<u32, BookingResponse<T, U>>(booking_id)
+            .get::<_, BookingResponse<T, U>>(booking_id)
             .map(|s| s.into_inner())
             .map_err(|e| Error::HTTPError(e.to_string()))
+    }
+    
+    pub fn bookings_after_date<T, U>(&self, date: time::OffsetDateTime)
+    -> Result<Vec<BookingResponse<T, U>>, Error>
+    where T: Unsigned + DeserializeOwned, U: Float + DeserializeOwned {
+        self.bookings_after_date_sort_by(date, "")
+    }
+
+    pub fn bookings_sort_by<T, U>(&self, field: &str) -> Result<Vec<BookingResponse<T, U>>, Error>
+    where T: Unsigned + DeserializeOwned, U: Float + DeserializeOwned {
+        self.bookings_after_date_sort_by(time::OffsetDateTime::UNIX_EPOCH, field)
+    }    
+
+    pub fn bookings_after_date_sort_by<T, U>(&self, date: time::OffsetDateTime, field: &str) -> Result<Vec<BookingResponse<T, U>>, Error>
+    where T: Unsigned + DeserializeOwned, U: Float + DeserializeOwned {
+        self
+            .restclient
+            .get::<_, BookingResponseGroup<T, U>>((date, field))
+            .map(|s| s.into_inner().0)
+            .map_err(|e| Error::HTTPError(e.to_string()))
+    }
+}
+
+#[derive(Deserialize)]
+struct BookingResponseGroup<T, U>(Vec<BookingResponse<T, U>>)
+where T: Unsigned, U: Float;
+
+impl<T, U> restson::RestPath<(time::OffsetDateTime, &str)> for BookingResponseGroup<T, U>
+where T: Unsigned, U: Float {
+    fn get_path((since, sort): (time::OffsetDateTime, &str)) -> Result<String, restson::Error> {
+        Ok(format!("bookings/v4/?since={since}&sort={sort}"))
     }
 }
 
@@ -169,5 +200,16 @@ mod tests {
         let booking = c.booking::<u32, f64>(623630);
 
         assert!(booking.is_ok());
+    }
+    
+    #[test]
+    fn should_get_all_bookings() {
+        let c = Client::new();
+        let m = c.bookings_after_date_sort_by::<u32, f64>(time::OffsetDateTime::UNIX_EPOCH, "booking_time");
+        
+        match m {
+            Ok(l) => println!("{:?}", l),
+            Err(e) => println!("{:?}", e)
+        }
     }
 }
